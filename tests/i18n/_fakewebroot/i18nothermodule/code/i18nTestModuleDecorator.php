@@ -1,11 +1,12 @@
 <?php
-class i18nTestModuleDecorator extends DataObjectDecorator {
-	function extraStatics() {
-		return array(
-			'db' => array(
-				'MyExtraField' => 'Varchar'
-			)
-		);
-	}
+class i18nTestModuleDecorator extends DataObjectDecorator
+{
+    public function extraStatics()
+    {
+        return array(
+            'db' => array(
+                'MyExtraField' => 'Varchar'
+            )
+        );
+    }
 }
-?>

@@ -7,32 +7,38 @@ ini_set('display_errors', 1);
 
 // Overrides paths relative to this file (in sapphire/tests/FullTestSuite.php)
 global $_SERVER;
-if (!$_SERVER) $_SERVER = array();
+if (!$_SERVER) {
+    $_SERVER = array();
+}
 $_SERVER['SCRIPT_FILENAME'] = getcwd() . DIRECTORY_SEPARATOR . 'sapphire' . DIRECTORY_SEPARATOR . 'cli-script.php';
 
 // Prepare manifest autoloader
-function silverstripe_test_autoload($className) {
-  global $_CLASS_MANIFEST;
-  $lClassName = strtolower($className);
-  if(isset($_CLASS_MANIFEST[$lClassName])) include_once($_CLASS_MANIFEST[$lClassName]);
-  else if(isset($_CLASS_MANIFEST[$className])) include_once($_CLASS_MANIFEST[$className]);
+function silverstripe_test_autoload($className)
+{
+    global $_CLASS_MANIFEST;
+    $lClassName = strtolower($className);
+    if (isset($_CLASS_MANIFEST[$lClassName])) {
+        include_once($_CLASS_MANIFEST[$lClassName]);
+    } elseif (isset($_CLASS_MANIFEST[$className])) {
+        include_once($_CLASS_MANIFEST[$className]);
+    }
 }
 spl_autoload_register('silverstripe_test_autoload');
 
 // Copied from cli-script.php, to enable same behaviour through phpunit runner.
-if(isset($_SERVER['argv'][2])) {
-    $args = array_slice($_SERVER['argv'],2);
+if (isset($_SERVER['argv'][2])) {
+    $args = array_slice($_SERVER['argv'], 2);
     $_GET = array();
-    foreach($args as $arg) {
-       if(strpos($arg,'=') == false) {
-           $_GET['args'][] = $arg;
-       } else {
-           $newItems = array();
-           parse_str( (substr($arg,0,2) == '--') ? substr($arg,2) : $arg, $newItems );
-           $_GET = array_merge($_GET, $newItems);
-       }
+    foreach ($args as $arg) {
+        if (strpos($arg, '=') == false) {
+            $_GET['args'][] = $arg;
+        } else {
+            $newItems = array();
+            parse_str((substr($arg, 0, 2) == '--') ? substr($arg, 2) : $arg, $newItems);
+            $_GET = array_merge($_GET, $newItems);
+        }
     }
-	$_REQUEST = $_GET;
+    $_REQUEST = $_GET;
 }
 
 require_once(getcwd()."/sapphire/core/Core.php");
@@ -44,25 +50,27 @@ $_SERVER['REQUEST_URI'] = BASE_URL . '/dev/tests/all';
 $_SESSION = null;
 
 // Fake a current controller. Way harder than it should be
-class FakeController extends Controller {
+class FakeController extends Controller
+{
   
-  function __construct() {
-    parent::__construct();
+    public function __construct()
+    {
+        parent::__construct();
 
-    $session = new Session(isset($_SESSION) ? $_SESSION : null);
-    $this->setSession($session);
+        $session = new Session(isset($_SESSION) ? $_SESSION : null);
+        $this->setSession($session);
     
-    $this->pushCurrent();
+        $this->pushCurrent();
 
-    $this->request = new SS_HTTPRequest(
+        $this->request = new SS_HTTPRequest(
       (isset($_SERVER['X-HTTP-Method-Override'])) ? $_SERVER['X-HTTP-Method-Override'] : $_SERVER['REQUEST_METHOD'],
       '/'
     );
 
-    $this->response = new SS_HTTPResponse();
+        $this->response = new SS_HTTPResponse();
     
-    $this->init();
-  }
+        $this->init();
+    }
 }
 
 global $_ALL_CLASSES;
