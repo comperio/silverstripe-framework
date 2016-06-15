@@ -60,7 +60,10 @@ class MySQLDatabase extends SS_Database {
             $this->databaseError("Couldn't connect to MySQL database | " . $this->dbConn->connect_error);
         }
         
-        $this->query("SET sql_mode = 'ANSI'");
+        /* $this->query("SET sql_mode = 'ANSI'"); */
+
+        /* Risoluzione errore "only_full_group_by" (http://dev.mysql.com/doc/refman/5.7/en/sql-mode.html#sqlmode_ansi) */
+        $this->query("SET sql_mode = 'REAL_AS_FLOAT,PIPES_AS_CONCAT,ANSI_QUOTES,IGNORE_SPACE,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'");
 
         if(self::$connection_charset) {
             $this->dbConn->set_charset(self::$connection_charset);
